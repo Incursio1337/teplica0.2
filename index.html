@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.5, user-scalable=yes">
+    <title>Умная теплица • Мониторинг</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <div class="app-bar">
+            <div class="logo-area">
+                <h1>Умная теплица</h1>
+            </div>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span class="theme-icon">🌙</span>
+            </div>
+        </div>
+
+        <div class="main-grid">
+            <div class="card param-widget" onclick="openModal('temp')">
+                <div class="widget-header">
+                    <span class="param-icon">🌡️</span>
+                    <h2>Температура воздуха</h2>
+                    <span class="status-badge" id="tempStatusBadge">Норма</span>
+                </div>
+                <div class="current-value" id="tempValueDisplay">23.3 °C</div>
+                <div class="chart-container">
+                    <canvas id="tempChart" width="400" height="70"></canvas>
+                </div>
+                <div class="stats-row">
+                    <span>мин <strong id="tempMinVal">23.2</strong>°</span>
+                    <span>макс <strong id="tempMaxVal">24.1</strong>°</span>
+                    <span>сред <strong id="tempAvgVal">23.7</strong>°</span>
+                </div>
+            </div>
+
+            <div class="card param-widget" onclick="openModal('hum')">
+                <div class="widget-header">
+                    <span class="param-icon">💧</span>
+                    <h2>Влажность воздуха</h2>
+                    <span class="status-badge" id="humStatusBadge">Норма</span>
+                </div>
+                <div class="current-value" id="humValueDisplay">73 %</div>
+                <div class="chart-container">
+                    <canvas id="humChart" width="400" height="70"></canvas>
+                </div>
+                <div class="stats-row">
+                    <span>мин <strong id="humMinVal">70</strong>%</span>
+                    <span>макс <strong id="humMaxVal">76</strong>%</span>
+                    <span>сред <strong id="humAvgVal">72</strong>%</span>
+                </div>
+            </div>
+
+            <div class="card param-widget" onclick="openModal('co2')">
+                <div class="widget-header">
+                    <span class="param-icon">🌪️</span>
+                    <h2>Уровень CO₂</h2>
+                    <span class="status-badge" id="co2StatusBadge">Норма</span>
+                </div>
+                <div class="current-value" id="co2ValueDisplay">450 ppm</div>
+                <div class="chart-container">
+                    <canvas id="co2Chart" width="400" height="70"></canvas>
+                </div>
+                <div class="stats-row">
+                    <span>мин <strong id="co2MinVal">443</strong>ppm</span>
+                    <span>макс <strong id="co2MaxVal">456</strong>ppm</span>
+                    <span>сред <strong id="co2AvgVal">449</strong>ppm</span>
+                </div>
+            </div>
+
+            <div class="card water-card" onclick="openWaterModal()">
+                <div class="widget-header">
+                    <span class="param-icon">💧</span>
+                    <h2>Расход воды сегодня</h2>
+                    <span class="status-badge" id="waterStatusBadge">Норма</span>
+                </div>
+                <div class="current-value" id="waterValueDisplay">121.3 л</div>
+                <div class="chart-container">
+                    <canvas id="waterChart" width="400" height="70"></canvas>
+                </div>
+                <div class="stats-row water-stats">
+                    <span>сред <strong id="waterAvg">118</strong>л</span>
+                    <span>лимит <strong id="waterLimit">200</strong>л</span>
+                    <span>ост <strong id="waterLeft">78.7</strong>л</span>
+                </div>
+            </div>
+
+            <div class="card economics-card-full" onclick="openEconomicsModal()">
+                <div class="economics-header">
+                    <span class="section-icon">💰</span>
+                    <span class="section-title">Экономические показатели</span>
+                </div>
+                <div class="economics-content" id="economicsContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal" class="modal">
+        <div class="modal-content"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

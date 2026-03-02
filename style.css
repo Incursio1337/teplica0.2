@@ -1,0 +1,967 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #eaf2ec;
+    --text: #173b2a;
+    --text-soft: #4f7b63;
+    --surface: rgba(255, 255, 255, 0.9);
+    --surface-strong: #f4faf6;
+    --surface-accent: #e9f3e9;
+    --border: rgba(180, 210, 185, 0.55);
+    --shadow: 0 10px 30px rgba(0, 40, 20, 0.07);
+    --primary: #2b8c4c;
+    --primary-strong: #1d6b3c;
+    --danger: #a13535;
+    --danger-bg: #ffdede;
+    --ok-bg: #e3f1e6;
+    --modal-overlay: rgba(8, 29, 18, 0.58);
+}
+
+html,
+body {
+    width: 100%;
+    overflow-x: hidden;
+}
+
+body {
+    min-height: 100dvh;
+    padding: clamp(8px, 2vw, 20px);
+    font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.45;
+    transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+
+.dashboard {
+    width: min(1400px, 100%);
+    margin: 0 auto;
+}
+
+.app-bar {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 62px;
+    padding: 12px 16px;
+    margin-bottom: clamp(10px, 2vw, 20px);
+    border-radius: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.logo-area {
+    max-width: 100%;
+    padding: 0 58px 0 10px;
+    min-width: 0;
+}
+
+.logo-area h1 {
+    font-size: clamp(18px, 4vw, 24px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    text-align: center;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.theme-toggle {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    border: 1px solid var(--border);
+    background: var(--surface-strong);
+    font-size: 21px;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.theme-toggle:hover {
+    transform: translateY(-50%) scale(1.04);
+}
+
+.main-grid {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: clamp(10px, 1.6vw, 16px);
+    align-items: start;
+}
+
+.card {
+    min-width: 0;
+    border-radius: 22px;
+    padding: clamp(10px, 1.4vw, 14px);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+.param-widget,
+.water-card {
+    grid-column: span 3;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    cursor: pointer;
+}
+
+.economics-card-full {
+    grid-column: 1 / -1;
+    cursor: pointer;
+}
+
+.param-widget:hover,
+.water-card:hover,
+.economics-card-full:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px rgba(0, 40, 20, 0.11);
+}
+
+.widget-header {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    min-width: 0;
+    margin-bottom: 6px;
+}
+
+.param-icon {
+    font-size: 21px;
+    line-height: 1;
+}
+
+.widget-header h2 {
+    min-width: 0;
+    margin-inline-end: auto;
+    font-size: clamp(14px, 2.2vw, 16px);
+    font-weight: 600;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.status-badge,
+.modal-status {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+    background: var(--ok-bg);
+    color: var(--primary-strong);
+}
+
+.modal-status-normal {
+    background: var(--ok-bg);
+    color: var(--primary-strong);
+}
+
+.modal-status-critical {
+    background: var(--danger-bg);
+    color: var(--danger);
+}
+
+.current-value {
+    margin-bottom: 8px;
+    font-size: clamp(24px, 5vw, 32px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.06;
+    color: var(--text);
+}
+
+.chart-container {
+    width: 100%;
+    height: 72px;
+    margin: 2px 0 8px;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    background: transparent;
+}
+
+.stats-row,
+.water-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+    padding: 8px;
+    border-radius: 14px;
+    background: var(--surface-strong);
+}
+
+.stats-row span,
+.water-stats span {
+    min-width: 0;
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 4px;
+    text-align: center;
+    white-space: nowrap;
+    line-height: 1.2;
+    font-size: 12px;
+    color: var(--text-soft);
+}
+
+.stats-row strong,
+.water-stats strong {
+    color: var(--text);
+}
+
+.economics-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.section-icon {
+    font-size: 22px;
+}
+
+.section-title {
+    font-size: clamp(16px, 3vw, 18px);
+    font-weight: 700;
+    color: var(--text);
+}
+
+.economics-content {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.economics-soil-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 10px;
+}
+
+.soil-item,
+.economics-item,
+.modal-stat-item,
+.range-item,
+.water-day,
+.economics-detailed-item {
+    min-width: 0;
+    border-radius: 14px;
+    background: var(--surface-strong);
+    border: 1px solid rgba(180, 210, 185, 0.4);
+}
+
+.soil-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px;
+}
+
+.soil-head {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.soil-icon {
+    font-size: 20px;
+    flex: 0 0 auto;
+}
+
+.soil-label {
+    min-width: 0;
+    font-size: 13px;
+    color: var(--text-soft);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.soil-value {
+    flex: 0 0 auto;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--primary-strong);
+    white-space: nowrap;
+}
+
+.economics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+}
+
+.economics-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px;
+    min-height: 88px;
+}
+
+.economics-label,
+.economics-subvalue,
+.total-label,
+.profit-label,
+.modal-stat-label,
+.range-label,
+.range-desc,
+.water-day-name,
+.economics-detailed-label,
+.economics-detailed-subvalue,
+.modal-note {
+    color: var(--text-soft);
+}
+
+.economics-label,
+.modal-stat-label,
+.range-label,
+.economics-detailed-label {
+    font-size: 11px;
+}
+
+.economics-value,
+.total-value,
+.profit-value,
+.modal-stat-value,
+.range-value,
+.water-day-value,
+.economics-detailed-value,
+.economics-total-value {
+    color: var(--primary-strong);
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.economics-value {
+    font-size: clamp(16px, 2.5vw, 18px);
+}
+
+.economics-subvalue {
+    font-size: 12px;
+    min-height: 16px;
+}
+
+.trend-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+.trend-up {
+    color: #1f7a3b;
+    background: #e5f7ec;
+}
+
+.trend-down {
+    color: #ad2c2c;
+    background: #feecec;
+}
+
+.trend-flat {
+    color: #556370;
+    background: #eef1f4;
+}
+
+.value-up {
+    color: #1f7a3b;
+}
+
+.value-down {
+    color: #ad2c2c;
+}
+
+.value-flat {
+    color: var(--primary-strong);
+}
+
+.economics-total-row,
+.profit-row,
+.economics-total {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 14px;
+}
+
+.economics-total-row,
+.economics-total {
+    background: var(--surface-accent);
+}
+
+.profit-row,
+.economics-total-profit {
+    background: #d4edc9;
+}
+
+.total-label,
+.profit-label,
+.economics-total-label {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.total-value,
+.profit-value,
+.economics-total-value {
+    font-size: clamp(18px, 4vw, 22px);
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: clamp(8px, 3vw, 24px);
+    background: var(--modal-overlay);
+}
+
+.modal-content {
+    width: min(860px, 100%);
+    max-height: calc(100dvh - clamp(16px, 6vw, 48px));
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: clamp(12px, 2.2vw, 18px);
+    border-radius: 22px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    box-shadow: 0 30px 55px rgba(0, 25, 10, 0.3);
+    overflow: auto;
+}
+
+.modal-content.water-modal {
+    width: min(760px, 100%);
+}
+
+.modal-header {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto auto;
+    grid-template-areas: "icon title status close";
+    align-items: center;
+    gap: 10px;
+}
+
+.modal-icon {
+    grid-area: icon;
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+    border-radius: 12px;
+    background: var(--surface-strong);
+}
+
+.modal-header h2 {
+    grid-area: title;
+    min-width: 0;
+    font-size: clamp(18px, 4vw, 22px);
+    font-weight: 700;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.modal-status {
+    grid-area: status;
+    justify-self: end;
+}
+
+.modal-close {
+    grid-area: close;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    font-size: 23px;
+    line-height: 1;
+    color: var(--text-soft);
+    background: var(--surface-strong);
+}
+
+.period-selector {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px;
+    border-radius: 999px;
+    background: var(--surface-strong);
+}
+
+.period-btn,
+.chart-type-btn {
+    border: none;
+    border-radius: 999px;
+    padding: 7px 13px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--text-soft);
+    background: transparent;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.period-btn.active {
+    color: #fff;
+}
+
+.period-btn[data-period="day"].active {
+    background: #3498db;
+}
+
+.period-btn[data-period="month"].active {
+    background: #2b8c4c;
+}
+
+.period-btn[data-period="year"].active {
+    background: #e67e22;
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.modal-current-value {
+    padding: 12px;
+    border-radius: 16px;
+    text-align: center;
+    font-size: clamp(28px, 7vw, 42px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    background: var(--surface-strong);
+}
+
+.modal-stats,
+.modal-ranges {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(145px, 1fr));
+    gap: 10px;
+}
+
+.modal-stat-item,
+.range-item,
+.economics-detailed-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px;
+    min-height: 66px;
+}
+
+.modal-stat-value,
+.economics-detailed-value {
+    font-size: 15px;
+}
+
+.range-value {
+    font-size: 14px;
+    line-height: 1.32;
+}
+
+.range-desc {
+    font-size: 10px;
+}
+
+.modal-description {
+    border-radius: 14px;
+    padding: 12px;
+    font-size: 13px;
+    line-height: 1.45;
+    background: var(--surface-strong);
+    border: 1px solid rgba(180, 210, 185, 0.4);
+    color: var(--text);
+}
+
+.modal-description p + p {
+    margin-top: 4px;
+}
+
+.modal-description-compact {
+    margin-top: 0;
+}
+
+.modal-note {
+    margin-top: 6px;
+    font-size: 12px;
+}
+
+.modal-water-next {
+    border-radius: 14px;
+    padding: 9px 12px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--text);
+    background: var(--surface-strong);
+    border: 1px solid rgba(180, 210, 185, 0.4);
+}
+
+.modal-chart-container {
+    width: 100%;
+    height: clamp(88px, 20vw, 125px);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.modal-chart-container-lg {
+    height: clamp(132px, 26vw, 180px);
+}
+
+.water-week-block {
+    margin-top: 4px;
+}
+
+.water-week-title {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.water-week-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(62px, 1fr));
+    gap: 6px;
+}
+
+.water-day {
+    text-align: center;
+    padding: 6px 4px;
+}
+
+.water-day-name {
+    font-size: 10px;
+    margin-bottom: 2px;
+}
+
+.water-day-value {
+    font-size: 11px;
+}
+
+.economics-detailed-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(165px, 1fr));
+    gap: 10px;
+}
+
+.economics-detailed-subvalue {
+    font-size: 12px;
+    margin-top: 2px;
+    min-height: 16px;
+}
+
+.economics-profit-value {
+    color: var(--primary-strong);
+}
+
+.economics-chart-panel {
+    border-radius: 16px;
+    padding: 12px;
+    background: #f8fdfa;
+    border: 1px solid rgba(180, 210, 185, 0.45);
+}
+
+.chart-type-controls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.chart-type-btn {
+    padding: 8px 14px;
+    background: var(--surface-strong);
+}
+
+.chart-type-btn.active {
+    color: #fff;
+}
+
+.chart-type-btn[data-chart="expenses"].active {
+    background: #ff7b47;
+}
+
+.chart-type-btn[data-chart="income"].active {
+    background: #4f88ff;
+}
+
+.chart-type-btn[data-chart="profit"].active {
+    background: #2b8c4c;
+}
+
+.economic-label-row {
+    margin-top: 10px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(42px, 1fr));
+    gap: 4px;
+}
+
+.economic-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-soft);
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.economic-label.is-empty {
+    opacity: 0.3;
+}
+
+body.dark-theme {
+    --bg: #0f281c;
+    --text: #def6e4;
+    --text-soft: #a5cdb2;
+    --surface: #1d3629;
+    --surface-strong: #294637;
+    --surface-accent: #2a4738;
+    --border: #3a5e48;
+    --shadow: 0 12px 28px rgba(0, 0, 0, 0.35);
+    --primary: #4fb871;
+    --primary-strong: #def6e4;
+    --danger: #ffd6d6;
+    --danger-bg: #5a2d2d;
+    --ok-bg: #294a37;
+    --modal-overlay: rgba(0, 10, 5, 0.72);
+}
+
+body.dark-theme .theme-toggle {
+    background: var(--surface-strong);
+}
+
+body.dark-theme .profit-row,
+body.dark-theme .economics-total-profit {
+    background: #2d5b40;
+}
+
+body.dark-theme .trend-up {
+    color: #9ef0b8;
+    background: rgba(55, 145, 88, 0.35);
+}
+
+body.dark-theme .trend-down {
+    color: #ffb3b3;
+    background: rgba(155, 52, 52, 0.35);
+}
+
+body.dark-theme .trend-flat {
+    color: #d0dfd5;
+    background: rgba(94, 112, 104, 0.35);
+}
+
+body.dark-theme .value-up {
+    color: #9ef0b8;
+}
+
+body.dark-theme .value-down {
+    color: #ffb3b3;
+}
+
+body.dark-theme .period-btn,
+body.dark-theme .chart-type-btn {
+    color: var(--text-soft);
+}
+
+body.dark-theme .economics-chart-panel {
+    background: #233e30;
+    border-color: #365844;
+}
+
+.period-btn:focus-visible,
+.chart-type-btn:focus-visible,
+.modal-close:focus-visible,
+.theme-toggle:focus-visible {
+    outline: 2px solid #4f88ff;
+    outline-offset: 2px;
+}
+
+@media (max-width: 1180px) {
+    .param-widget,
+    .water-card {
+        grid-column: span 6;
+    }
+
+    .economics-soil-grid {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    body {
+        padding: 10px;
+    }
+
+    .param-widget,
+    .water-card,
+    .economics-card-full {
+        grid-column: 1 / -1;
+    }
+
+    .app-bar {
+        justify-content: flex-start;
+        min-height: 56px;
+        border-radius: 20px;
+        padding-inline: 12px;
+    }
+
+    .logo-area {
+        padding-right: 56px;
+    }
+
+    .stats-row,
+    .water-stats {
+        padding: 7px;
+    }
+
+    .modal-content {
+        border-radius: 18px;
+    }
+
+    .modal-header {
+        grid-template-columns: auto minmax(0, 1fr) auto;
+        grid-template-areas:
+            "icon title close"
+            "status status status";
+    }
+
+    .modal-status {
+        justify-self: start;
+    }
+
+    .period-selector {
+        border-radius: 14px;
+    }
+
+    .chart-type-btn {
+        flex: 1 1 calc(50% - 8px);
+        text-align: center;
+    }
+}
+
+@media (max-width: 520px) {
+    body {
+        padding: 8px;
+    }
+
+    .card {
+        border-radius: 16px;
+        padding: 10px;
+    }
+
+    .app-bar {
+        border-radius: 16px;
+    }
+
+    .current-value {
+        font-size: clamp(23px, 8vw, 28px);
+    }
+
+    .modal-stats,
+    .modal-ranges,
+    .economics-detailed-grid,
+    .economics-grid,
+    .economics-soil-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row,
+    .water-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+        padding: 6px;
+    }
+
+    .stats-row span,
+    .water-stats span {
+        gap: 3px;
+        font-size: 10px;
+    }
+
+    .period-btn,
+    .chart-type-btn {
+        flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 400px) {
+    .stats-row,
+    .water-stats {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3px;
+        padding: 5px;
+    }
+
+    .stats-row span,
+    .water-stats span {
+        gap: 2px;
+        font-size: 9px;
+    }
+
+    .logo-area h1 {
+        font-size: 16px;
+    }
+
+    .theme-toggle {
+        width: 38px;
+        height: 38px;
+        font-size: 18px;
+    }
+}
+
+@media (hover: none) {
+    .param-widget:hover,
+    .water-card:hover,
+    .economics-card-full:hover {
+        transform: none;
+        box-shadow: var(--shadow);
+    }
+}
