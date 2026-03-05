@@ -99,7 +99,7 @@ const state = {
     
     tomatoYield: 20,
     tomatoTotal: 36000,
-    tomatoPrice: 80,
+    tomatoPrice: 150,
     tomatoIncome: 2880000,
     cucumberYield: 20,
     
